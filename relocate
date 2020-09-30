@@ -1,0 +1,72 @@
+{{/*
+
+  Created by Wolveric Catkin (Wolveric#0897), 2020
+  Trigger Type: Command
+  Trigger: Relocate
+  
+ */}}
+ {{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
+ {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
+ 
+  {{deleteTrigger 5}}
+  {{deleteResponse 5}}
+  {{$ignoreBotMessages := true}}
+  {{ignoreOwner := true}}
+  
+  {/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
+  {{/*Execution channel is blacklisted by default.*/}}
+	{{$validChannel := not (eq ($args.Get 1).ID .Channel.ID)}}
+  {{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
+	{{$validCategory := not (eq ($args.Get 1).ParentID 0)}}
+  
+{{/*END CONFIGURATION*/}}
+
+{{/*
+
+  ! NOTE ! 
+
+  IF USED ON A MESSAGE BY A USER WHO IS NO LONGER A MEMBER OF YOUR SERVER, AN ERROR WILL OCCUR.
+  I am aware of this conflict, and do not plan to reslove it. Instead, I advise turning off error messages for this command, as relocating such messages is likely not important.
+  
+  Additionally, embedded attachment content will only be preserved for up to 2 weeks. There is nothing I can do to resolve this. This is a limitation with Discord.
+
+*/}}
+
+{{if $targ := getMessage nil ($args.Get 0)}}
+	{{if and $valid_chan $valid_cat (and (not $targ.Author.Bot) $ignoreBotMessages) (and (ne $targ.Author.ID .Guild.OwnerID) $ignoreOwner)}}
+		{{$attach := ""}}
+		{{$file_links := "`None`"}}
+		{{$line := true}}
+		{{$temp_link := ""}}
+		{{if $targ.Attachments}}
+			{{$attach = (index $targ.Attachments 0).ProxyURL}}
+			{{$file_links = ""}}
+			{{range $i, $link := $targ.Attachments}}
+				{{$temp_link = print $file_links "[`File " (add 1 $i) "`](" .ProxyURL ")\n"}}
+				{{if lt (len $temp_link) 1024}}
+					{{$file_links = $temp_link}}
+				{{end}}
+			{{end}}
+			{{$line = false}}
+		{{end}}
+		{{$msgEmbed := cembed 
+			"title" (print "Relocated message, from member " (or (getMember $targ.Author.ID).Nick $targ.Author.Username) ".")
+			"description" $targ.Content 
+			"color" 4254516
+			"image" (sdict "url" $attach)
+			"fields" (cslice
+				(sdict "name" "Origin" "value" (print "<#" .Channel.ID ">") "inline" $line)
+				(sdict "name" "Attachments:" "value" $file_links "inline" $line))
+			"footer" (sdict "text" "Relocation Time")
+			"timestamp" currentTime}}
+		{{sendMessageNoEscape ($args.Get 1).ID (complexMessage "content" (print "Hey " $targ.Author.Mention "! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here.") "embed" $msgEmbed)}}
+		{{deleteMessage nil $targ.ID 0}}
+		{{addReactions "✅"}}
+	{{else if not (or $valid_chan $valid_cat)}}
+		Target channel is not a valid target.
+	{{else}}
+		Invalid target author.
+	{{end}}
+{{else}}
+	Unknown target message. Please try again.
+{{end}}
