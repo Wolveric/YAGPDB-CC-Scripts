@@ -5,7 +5,7 @@
   Trigger: Relocate
   
  */}}
- {{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
+ 
  {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
  
   {{deleteTrigger 5}}
@@ -20,7 +20,6 @@
 	{{$validCategory := not (eq ($args.Get 1).ParentID 0)}}
   
 {{/*END CONFIGURATION*/}}
-
 {{/*
 
   ! NOTE ! 
@@ -32,6 +31,7 @@
 
 */}}
 
+{{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
 {{if $targ := getMessage nil ($args.Get 0)}}
 	{{if and $valid_chan $valid_cat (and (not $targ.Author.Bot) $ignoreBotMessages) (and (ne $targ.Author.ID .Guild.OwnerID) $ignoreOwner)}}
 		{{$attach := ""}}
