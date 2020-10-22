@@ -17,7 +17,7 @@
 {{$override := or (hasRoleID 0) (eq .User.ID .Guild.OwnerID)}}
 
 {{/* Game roles, and names. Format by name/abriviation, in quoration marks, followed by role ID. IDs can be repeated multiple times with different names, letting users use different names for games. ONLY USE LOWERCASE, WITH NO SPACES FOR FOR NAMES. */}}
-{{/* "eamplegamename" and "egn" would be replaced with the name or abbriviation you want users to use for a game, and 0 would be replaced with the ID of the role related to that game.*/}}
+{{/* "examplegamename" and "egn" would be replaced with the name or abbriviation you want users to use for a game, and 0 would be replaced with the ID of the role related to that game.*/}}
 {{$role_dict := sdict "examplegamename" 0 "egn" 0}}
 
 {{/* CONFIGURATION END */}}
