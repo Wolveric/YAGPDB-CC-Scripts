@@ -9,7 +9,7 @@ Any folders of commands that work as a system, will be clearly marked as such in
 Each individual command file will have a leading comment, describing the commands function, and the purpose of it's design, as well as a recommended trigger type and trigger. this should inform how it should be set up in YAGPDBs control panel.
 
 ## Current Contents
-+ [Utilities](null)
++ [Utilities](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Utilities)
   + Relocate
   + Looking For Game
 
