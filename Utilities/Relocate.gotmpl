@@ -17,9 +17,9 @@
  {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
  
   {{$ignoreBotMessages := true}}
-  {{$ignoreOwner := false}}
+  {{$ignoreOwner := true}}
   
-  {/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
+  {{/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
   {{/*Execution channel is blacklisted by default.*/}}
 	{{$validChannel := not (eq ($args.Get 1).ID .Channel.ID)}}
   {{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
