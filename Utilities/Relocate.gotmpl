@@ -11,12 +11,13 @@
   
  */}}
  
+{{deleteTrigger 5}}
+{{deleteResponse 5}}
+{{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
  {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
  
-  {{deleteTrigger 5}}
-  {{deleteResponse 5}}
   {{$ignoreBotMessages := true}}
-  {{$ignoreOwner := true}}
+  {{$ignoreOwner := false}}
   
   {/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
   {{/*Execution channel is blacklisted by default.*/}}
@@ -36,9 +37,8 @@
 
 */}}
 
-{{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
 {{if $targ := getMessage nil ($args.Get 0)}}
-	{{if and $valid_chan $valid_cat (and (not $targ.Author.Bot) $ignoreBotMessages) (and (ne $targ.Author.ID .Guild.OwnerID) $ignoreOwner)}}
+	{{if and $validChannel $validCategory (and (not $targ.Author.Bot) $ignoreBotMessages) (and (ne $targ.Author.ID .Guild.OwnerID) $ignoreOwner)}}
 		{{$attach := ""}}
 		{{$file_links := "`None`"}}
 		{{$line := true}}
@@ -67,7 +67,7 @@
 		{{sendMessageNoEscape ($args.Get 1).ID (complexMessage "content" (print "Hey " $targ.Author.Mention "! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here.") "embed" $msgEmbed)}}
 		{{deleteMessage nil $targ.ID 0}}
 		{{addReactions "✅"}}
-	{{else if not (or $valid_chan $valid_cat)}}
+	{{else if not (or $validChannel $validCategory)}}
 		Target channel is not a valid target.
 	{{else}}
 		Invalid target author.
