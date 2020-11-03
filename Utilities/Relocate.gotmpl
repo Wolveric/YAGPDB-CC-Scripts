@@ -13,8 +13,9 @@
  
 {{deleteTrigger 5}}
 {{deleteResponse 5}}
-{{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
- {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
+{{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>```" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
+
+{{/*CONFIGURATION. ADJUST VALUES HERE*/}}
  
   {{$ignoreBotMessages := true}}
   {{$ignoreOwner := true}}
