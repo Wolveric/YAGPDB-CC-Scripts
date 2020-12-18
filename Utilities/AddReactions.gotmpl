@@ -7,6 +7,12 @@
   
   Description: Simple command to add reactions to a targeted message in a channel.
   
+  ! NOTE !
+  
+  You may wish to turn error messages off, as YAGPDB cannot check the validity of an emoji being added.
+  
+  ! NOTE !
+  
  */}}
 
 {{$args := parseArgs 2 "Correct Usage:```AddReactions/AddReaction/AddReacts/AddReact/AR <Message ID:ID>	<Emojis:String>```" (carg "int" "Message") (carg "string" "Reactions")}}
