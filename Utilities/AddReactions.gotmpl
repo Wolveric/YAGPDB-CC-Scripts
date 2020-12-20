@@ -16,11 +16,16 @@
  */}}
 
 {{$args := parseArgs 2 "Correct Usage:```AddReactions/AddReaction/AddReacts/AddReact/AR <Message ID:ID>	<Emojis:String>```" (carg "int" "Message") (carg "string" "Reactions")}}
-{{with and (getMessage nil ($args.Get 0)) (reFindAll "([\\w~]{2,32}:\\d{17,19})|[\\x{1f1e6}-\\x{1f1ff}]{2}|\\p{So}\\x{fe0f}?[\\x{1f3fb}-\\x{1f3ff}]?(\\x{200D}\\p{So}\\x{fe0f}?[\\x{1f3fb}-\\x{1f3ff}]?)*|[#\\d*]\\x{FE0F}?\\x{20E3}" ($args.Get 1))}}	
-	{{addMessageReactions nil ($args.Get 0) .}}
-	{{addReactions "✅"}}
-	Reactions Added.
-	{{deleteResponse 5}}
+{{with and ($targ := getMessage nil ($args.Get 0)) (reFindAll "([\\w~]{2,32}:\\d{17,19})|[\\x{1f1e6}-\\x{1f1ff}]{2}|\\p{So}\\x{fe0f}?[\\x{1f3fb}-\\x{1f3ff}]?(\\x{200D}\\p{So}\\x{fe0f}?[\\x{1f3fb}-\\x{1f3ff}]?)*|[#\\d*]\\x{FE0F}?\\x{20E3}" ($args.Get 1))}}	
+	{{$total := add (len $targ.Reactions) (len .)}}
+	{{if lt $total 20}}
+		{{addMessageReactions nil ($args.Get 0) .}}
+		{{addReactions "✅"}}
+		Reactions Added.
+		{{deleteResponse 5}}
+	{{else}}
+		Command cancelled. Exceeds 20 reaction limit.
+	{{end}}
 {{else}}
-	Message or Emojis not found.
+	No emojis found.
 {{end}}
