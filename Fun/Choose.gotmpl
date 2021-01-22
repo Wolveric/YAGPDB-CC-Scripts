@@ -1,0 +1,27 @@
+{{/*
+
+  Created by Wolveric Catkin (Wolveric#0897),
+  Trigger Type: Command
+  Trigger: choose
+  Case sensetive: false
+  
+  Description: A command that will have YAGPDB choose and option from the list of command arguments you give it. Functions similarly to the poll command.
+  
+  Wrapping options in "" will allow these options to contain multiple words, by allowing spaces.
+  
+ */}}
+{{if ge (len .CmdArgs) 2}}
+    {{sendMessage nil (complexMessage 
+        "content" (print .User.Mention ", my choice is...")
+        "embed" 
+            (cembed
+            "title" "YAGPDB Chose:"
+            "description" (index .CmdArgs (randInt (len .CmdArgs)))
+            "color" (randInt 16744576)
+            "footer" (sdict "text" "Command triggered at")
+            "timestamp" currentTime))}}
+{{else}}
+Not enough arguments passed.
+Correct usage:```Choose <Option:Text> <Option:Text> [Option:Text]... .etc```
+Note: Options can be specified by wrapping them in `""`, allowing for spaces to be used in the option.
+{{end}}
