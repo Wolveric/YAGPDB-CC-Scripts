@@ -1,0 +1,20 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
+
+  Trigger Type 1: Command
+  Trigger 1: avatar
+  Case sensetive: false
+
+  Trigger Type 2: RegEx
+  Trigger 2: \A(-|<@!?204255221017214977>)\s*(avatar|av|pfp)( +|\z)
+  
+  Description: A simplified command for getting the avatar of a given member.
+
+  Seeing as YAGPDB's Custom Commands can only retrieve data from current members of a server, it's only worthwhile making it available for use as such.
+  Also simplifies taking arguments, and using member IDs, instead of mentions.
+  
+ */}}
+{{$args := parseArgs 0 "Correct Usage:```Avatar [Target Member:Mention/ID]```" (carg "member" "Optional Target")}}
+{{$target := or ($args.Get 0) .Member}}
+{{$target.User.AvatarURL "4096"}}
