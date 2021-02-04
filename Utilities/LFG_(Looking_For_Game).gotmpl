@@ -1,6 +1,6 @@
 {{/*
 
-  Created by Wolveic Catkin (Wolveric#0897), 2020
+  Created by Wolveic Catkin (https://github.com/Wolveric), 2020
   Trigger Type: Command
   Trigger: lfg
   Case Sensetive: false
@@ -16,6 +16,8 @@
 
 {{/* CONFIGURATION START */}}
 
+{{$require_targ_role := true}}
+
 {{/* Override on roles and users who can use the command without needing the requesite game role. */}}
 {{$override := or (hasRoleID 0) (eq .User.ID .Guild.OwnerID)}}
 
@@ -29,7 +31,7 @@
 
 {{$game := lower (reReplace "\\s" ($args.Get 0) "")}}
 {{if $x := $role_dict.Get $game)}}
-	{{if or ($override) (hasRoleID $x)}} 
+	{{if or (not $require_targ_role) ($override) (hasRoleID $x)}} 
 		Hey guys! {{$.User.Mention}} is looking for someone to play {{mentionRoleID $x}} with! Come join them!
 	{{else}}
 		Sorry {{$.User.Mention}}, **but you do not have the correct role to call that.** Please check **Pinned Messages**, to be assigned it.
