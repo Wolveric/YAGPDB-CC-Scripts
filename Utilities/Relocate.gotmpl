@@ -1,6 +1,6 @@
 {{/*
 
-  Created by Wolveric Catkin (Wolveric#0897), 2020
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
   Trigger Type: Command
   Trigger: Relocate
   Case sensetive: false
@@ -10,20 +10,23 @@
   Designed for relocating messages to a chat with an appropriate topic. Not suitable for archiving message attachments.
   
  */}}
- 
+
 {{deleteTrigger 5}}
-{{deleteResponse 5}}
+{{deleteResponse 7}}
 {{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>```" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
 
 {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
- 
-  {{$ignoreBotMessages := true}}
-  {{$ignoreOwner := true}}
-  
-  {{/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
-  {{/*Execution channel is blacklisted by default.*/}}
+
+	{{$ignoreOwner := true}}
+
+	{{/* You may wish to disable this setting, if you're going to manage access to this command with commands settings*/}}
+	{{$require_manage := true}}
+
+	{{/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
+	{{/*Execution channel is blacklisted by default.*/}}
 	{{$validChannel := not (eq ($args.Get 1).ID .Channel.ID)}}
-  {{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
+
+  	{{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
 	{{$validCategory := not (eq ($args.Get 1).ParentID 0)}}
   
 {{/*END CONFIGURATION*/}}
@@ -31,15 +34,21 @@
 
   ! NOTE ! 
 
-  IF USED ON A MESSAGE BY A USER WHO IS NO LONGER A MEMBER OF YOUR SERVER, AN ERROR WILL OCCUR.
-  I am aware of this conflict, and do not plan to reslove it. Instead, I advise turning off error messages for this command, as relocating such messages is likely not important.
-  
-  Additionally, embedded attachment content will only be preserved for up to 2 weeks. There is nothing I can do to resolve this. This is a limitation with Discord.
+	Embedded attachment content will only be preserved for up to 2 weeks. There is nothing I can do to resolve this. This is a limitation with Discord.
 
 */}}
 
-{{if $targ := getMessage nil ($args.Get 0)}}
-	{{if and $validChannel $validCategory (and (not $targ.Author.Bot) $ignoreBotMessages) (and (ne $targ.Author.ID .Guild.OwnerID) $ignoreOwner)}}
+{{$require_manage = not (and $require_manage (not (reFind "ManageMessages" (exec "viewperms"))))}}
+
+{{if and ($targ := getMessage nil ($args.Get 0)) $require_manage}}
+
+	{{$auth_name := $targ.Author.Username}}
+	{{if $mem := getMember $targ.Author.ID}}
+		{{$auth_name = or $mem.Nick $auth_name}}
+	{{end}}
+
+	{{if and $validChannel $validCategory (not $targ.Author.Bot) (or (ne $targ.Author.ID .Guild.OwnerID) (not $ignoreOwner))}}
+
 		{{$attach := ""}}
 		{{$file_links := "`None`"}}
 		{{$line := true}}
@@ -49,14 +58,14 @@
 			{{$file_links = ""}}
 			{{range $i, $link := $targ.Attachments}}
 				{{$temp_link = print $file_links "[`File " (add 1 $i) "`](" .ProxyURL ")\n"}}
-				{{if lt (len $temp_link) 1024}}
+				{{if le (len $temp_link) 1024}}
 					{{$file_links = $temp_link}}
 				{{end}}
 			{{end}}
 			{{$line = false}}
 		{{end}}
 		{{$msgEmbed := cembed 
-			"title" (print "Relocated message, from member " (or (getMember $targ.Author.ID).Nick $targ.Author.Username) ".")
+			"title" (printf "Relocated message, from user, %s." $auth_name)
 			"description" $targ.Content 
 			"color" 4254516
 			"image" (sdict "url" $attach)
@@ -65,14 +74,16 @@
 				(sdict "name" "Attachments:" "value" $file_links "inline" $line))
 			"footer" (sdict "text" "Relocation Time")
 			"timestamp" currentTime}}
-		{{sendMessageNoEscape ($args.Get 1).ID (complexMessage "content" (print "Hey " $targ.Author.Mention "! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here.") "embed" $msgEmbed)}}
+		{{sendMessage ($args.Get 1).ID (complexMessage "content" (print "Hey " $targ.Author.Mention "! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here.") "embed" $msgEmbed)}}
 		{{deleteMessage nil $targ.ID 0}}
 		{{addReactions "✅"}}
 	{{else if not (or $validChannel $validCategory)}}
 		Target channel is not a valid target.
 	{{else}}
-		Invalid target author.
+		{{$auth_name}} is not a valid target!
 	{{end}}
+{{else if not $require_manage}}
+	Unable to run the command: The Relocate command requires the **Manage Messages** permission in this channel. (if you do contact bot support)
 {{else}}
 	Unknown target message. Please try again.
 {{end}}
