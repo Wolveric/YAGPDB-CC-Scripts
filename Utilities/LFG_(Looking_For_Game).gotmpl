@@ -22,7 +22,7 @@
 
   {{/* Announcment messages for the outcome of the command.*/}}
   {{/*Note: "%s" in the sucess command, defines where to put the role ping, so be sure not to exclude it, if you customise the message.*/}}
-  {{$success_msg := print "Hey guys! " .User.Mention "is looking for someone to play %s with! Come join!"}}
+  {{$sucess_msg := print "Hey guys! " .User.Mention "is looking for someone to play %s with! Come join!"}}
   {{$fail_msg_no_role := print "Sorry " .User.Mention ", **but you do not have the role to ping that.**"}}
   {{$fail_msg_no_game := print "Sorry " .User.Username ", something went wrong. Please try a different name/abriviation."}}
 
