@@ -1,6 +1,6 @@
 {{/*
 
-  Created by Wolveic Catkin (https://github.com/Wolveric), 2020
+  Created by Wolveic Catkin (https://github.com/Wolveric), 2021
   Trigger Type: Command
   Trigger: lfg
   Case Sensetive: false
@@ -11,31 +11,31 @@
   
 */}}
 
-{{/* Line collects custom arguments, needed for script to work. Do not touch without prior knowledge. */}}
-{{$args := parseArgs 1 "Please give a game name/abbreviation." (carg "string" "Game Arg") (carg "string" "Game info")}}
-
 {{/* CONFIGURATION START */}}
 
-{{$require_targ_role := true}}
+  {{/* Game roles, and names. Format by name/abriviation, in quoration marks, followed by role ID. IDs can be repeated multiple times with different names, letting users use different names for games. ONLY USE LOWERCASE, WITH NO SPACES FOR FOR NAMES. */}}
+  {{/* "examplegamename" and "egn" would be replaced with the name or abbriviation you want users to use for a game, and 0 would be replaced with the ID of the role related to that game.*/}}
+  {{$role_dict := sdict "examplegamename" 0 "egn" 0}}
 
-{{/* Override on roles and users who can use the command without needing the requesite game role. */}}
-{{$override := or (hasRoleID 0) (eq .User.ID .Guild.OwnerID)}}
+  {{/* Does the user need to have the role being pinged, to ping it?*/}}
+  {{$require_targ_role := true}}
 
-{{/* Game roles, and names. Format by name/abriviation, in quoration marks, followed by role ID. IDs can be repeated multiple times with different names, letting users use different names for games. ONLY USE LOWERCASE, WITH NO SPACES FOR FOR NAMES. */}}
-{{/* "examplegamename" and "egn" would be replaced with the name or abbriviation you want users to use for a game, and 0 would be replaced with the ID of the role related to that game.*/}}
-{{$role_dict := sdict "examplegamename" 0 "egn" 0}}
+  {{/* Announcment messages for the outcome of the command.*/}}
+  {{/*Note: "%s" in the sucess command, defines where to put the role ping, so be sure not to exclude it, if you customise the message.*/}}
+  {{$success_msg := print "Hey guys! " .User.Mention "is looking for someone to play %s with! Come join!"}}
+  {{$fail_msg_no_role := print "Sorry " .User.Mention ", **but you do not have the role to ping that.**"}}
+  {{$fail_msg_no_game := print "Sorry " .User.Username ", something went wrong. Please try a different name/abriviation."}}
 
 {{/* CONFIGURATION END */}}
 
-{{/* Code DO NOT TOUCH WITHOUT PRIOR KNOWLEDGE. */}}
-
+{{$args := parseArgs 1 "Please give a game name/abbreviation." (carg "string" "Game Arg") (carg "string" "Game info")}}
 {{$game := lower (reReplace "\\s" ($args.Get 0) "")}}
-{{if $x := $role_dict.Get $game)}}
-	{{if or (not $require_targ_role) ($override) (hasRoleID $x)}} 
-		Hey guys! {{$.User.Mention}} is looking for someone to play {{mentionRoleID $x}} with! Come join them!
+{{if $x := $role_dict.Get $game}}
+	{{if or (not $require_targ_role) (hasRoleID $x)}} 
+		{{mentionRoleID $x|printf $sucess_msg}}
 	{{else}}
-		Sorry {{$.User.Mention}}, **but you do not have the correct role to call that.** Please check **Pinned Messages**, to be assigned it.
+		{{$fail_msg_no_role}}
 	{{end}}
 {{else}}
-	Sorry {{.User.Mention}}, but something went wrong. Please try changing the name/abbreviation that you used.
+	{{$fail_msg_no_game}}
 {{end}}
