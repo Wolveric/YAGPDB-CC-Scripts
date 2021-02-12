@@ -22,7 +22,7 @@
 
   {{/* Announcment messages for the outcome of the command.*/}}
   {{/*Note: "%s" in the sucess command, defines where to put the role ping, so be sure not to exclude it, if you customise the message.*/}}
-  {{$sucess_msg := print "Hey guys! " .User.Mention "is looking for someone to play %s with! Come join!"}}
+  {{$success_msg := print "Hey guys! " .User.Mention "is looking for someone to play %s with! Come join!"}}
   {{$fail_msg_no_role := print "Sorry " .User.Mention ", **but you do not have the role to ping that.**"}}
   {{$fail_msg_no_game := print "Sorry " .User.Username ", something went wrong. Please try a different name/abriviation."}}
 
@@ -32,7 +32,7 @@
 {{$game := lower (reReplace "\\s" ($args.Get 0) "")}}
 {{if $x := $role_dict.Get $game}}
 	{{if or (not $require_targ_role) (hasRoleID $x)}} 
-		{{mentionRoleID $x|printf $sucess_msg}}
+		{{mentionRoleID $x|printf $success_msg}}
 	{{else}}
 		{{$fail_msg_no_role}}
 	{{end}}
