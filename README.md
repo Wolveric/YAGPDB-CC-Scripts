@@ -12,10 +12,11 @@ Each individual command file will have a leading comment, describing the command
 + [Utilities](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Utilities)
   + Relocate
   + Looking For Game
+  + Add Reactions
 
 ## Disclaimer
 The YAGPDB creator, staff, and/or support are not responsible for any difficulties caused by these custom commands.
 These commands are not guaranteed to be entirely free of faults, and may be detailed as in cases where this applies.
 
 ## Need help?
-If you are having difficulties with one of the custom commands here, I am regularly available for enquiries on the [YAGPDB Support Server](https://discord.gg/5uVyq2E). You can find me as `Wolveric#0897`.
+If you are having difficulties with one of the custom commands here, I am regularly available for enquiries on the [YAGPDB Support Server](https://discord.gg/5uVyq2E). You can find me as `Wolveric#0897`, though I generally prefer not to be DMed directly.
