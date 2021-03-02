@@ -39,7 +39,7 @@
 
 */}}
 
-{{$require_manage = not (and $require_manage (not (reFind "ManageMessages" (exec "viewperms"))))}}
+{{$require_manage = not (and $require_manage (not (reFind "ManageMessages" (index (split (exec "viewperms") "\n") 2))))}}
 
 {{if and ($targ := getMessage nil ($args.Get 0)) $require_manage}}
 
