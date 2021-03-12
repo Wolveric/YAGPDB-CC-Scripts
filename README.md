@@ -10,9 +10,11 @@ Each individual command file will have a leading comment, describing the command
 
 ## Current Contents
 + [Utilities](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Utilities)
-  + Relocate
   + Looking For Game
   + Add Reactions
++ [Moderation](https://github.com/Wolveric/YAGPDB-Scripts/tree/Master/Moderation)
+  + Relocate
+  + Custom Role Command Controls
 
 ## Disclaimer
 The YAGPDB creator, staff, and/or support are not responsible for any difficulties caused by these custom commands.
