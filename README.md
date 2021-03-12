@@ -12,7 +12,7 @@ Each individual command file will have a leading comment, describing the command
 + [Utilities](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Utilities)
   + Looking For Game
   + Add Reactions
-+ [Moderation](https://github.com/Wolveric/YAGPDB-Scripts/tree/Master/Moderation)
++ [Moderation](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Moderation)
   + Relocate
   + Custom Role Command Controls
 
