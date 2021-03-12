@@ -1,34 +1,34 @@
 {{/*
 
-  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
+  Created by Wolveric Catkin (Wolveric#0897), 2021
   License: MIT
   Trigger Type: Command
   Trigger: Relocate
-  Case sensetive: false
+  Case sensitive: false
   
-  Description: A command for reposting a message and it's content (including files, temporarily) to another chat, and clearing up any remnants, .i.e, the command trigger and target message.
+  Description: A command for reposting a message and its content (including files, temporarily) to another chat, and clearing up any remnants, i.e., the command trigger and target message.
   
   Designed for relocating messages to a chat with an appropriate topic. Not suitable for archiving message attachments.
   
  */}}
 
 {{deleteTrigger 5}}
-{{deleteResponse 7}}
+{{deleteResponse 5}}
 {{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>```" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
 
 {{/*CONFIGURATION. ADJUST VALUES HERE*/}}
 
-	{{$ignoreOwner := true}}
+	{{$ignore_owner := true}}
 
 	{{/* You may wish to disable this setting, if you're going to manage access to this command with commands settings*/}}
 	{{$require_manage := true}}
 
 	{{/*Inset IDs of channels and categories you don't want messages relocated to.*/}}
 	{{/*Execution channel is blacklisted by default.*/}}
-	{{$validChannel := not (eq ($args.Get 1).ID .Channel.ID)}}
+	{{$valid_channel := not (eq ($args.Get 1).ID .Channel.ID)}}
 
   	{{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
-	{{$validCategory := not (eq ($args.Get 1).ParentID 0)}}
+	{{$valid_category := not (eq ($args.Get 1).ParentID 0)}}
   
 {{/*END CONFIGURATION*/}}
 {{/*
@@ -39,7 +39,7 @@
 
 */}}
 
-{{$require_manage = not (and $require_manage (not (reFind "ManageMessages" (index (split (exec "viewperms") "\n") 2))))}}
+{{$require_manage = or (not $require_manage) (inFold  (index (split (exec "viewperms") "\n") 2) "ManageMessages")}}
 
 {{if and ($targ := getMessage nil ($args.Get 0)) $require_manage}}
 
@@ -48,7 +48,7 @@
 		{{$auth_name = or $mem.Nick $auth_name}}
 	{{end}}
 
-	{{if and $validChannel $validCategory (not $targ.Author.Bot) (or (ne $targ.Author.ID .Guild.OwnerID) (not $ignoreOwner))}}
+	{{if and $valid_channel $valid_category (not $targ.Author.Bot) (or (ne $targ.Author.ID .Guild.OwnerID) (not $ignore_owner))}}
 
 		{{$attach := ""}}
 		{{$file_links := "`None`"}}
@@ -78,7 +78,7 @@
 		{{sendMessage ($args.Get 1).ID (complexMessage "content" (print "Hey " $targ.Author.Mention "! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here.") "embed" $msgEmbed)}}
 		{{deleteMessage nil $targ.ID 0}}
 		{{addReactions "✅"}}
-	{{else if not (or $validChannel $validCategory)}}
+	{{else if not (or $valid_channel $valid_category)}}
 		Target channel is not a valid target.
 	{{else}}
 		{{$auth_name}} is not a valid target!

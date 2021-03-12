@@ -1,12 +1,12 @@
 {{/*
 
-  Created by Wolveic Catkin (https://github.com/Wolveric), 2021
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
   License: MIT
   Trigger Type: Command
   Trigger: lfg
-  Case Sensetive: false
+  Case sensitive: false
   
-  Description: Enables controlled user pings, requiring a user to both posses the role they are pinging, as well as only allowing them to use this command in select chats.
+  Description: Enables controlled user pings, requiring a user to both possess the role they are pinging, as well as only allowing them to use this command in select chats.
   
   Designed to enable a "Looking For Game" system, where a server has assignable game roles, for users who wish to be notified of when someone is looking for people to play a given game with.
   
@@ -14,15 +14,15 @@
 
 {{/* CONFIGURATION START */}}
 
-  {{/* Game roles, and names. Format by name/abriviation, in quoration marks, followed by role ID. IDs can be repeated multiple times with different names, letting users use different names for games. ONLY USE LOWERCASE, WITH NO SPACES FOR FOR NAMES. */}}
-  {{/* "examplegamename" and "egn" would be replaced with the name or abbriviation you want users to use for a game, and 0 would be replaced with the ID of the role related to that game.*/}}
+  {{/* Game roles, and names. Format by name/abbreviation, in quotation marks, followed by role ID. IDs can be repeated multiple times with different names, letting users use different names for games. ONLY USE LOWERCASE, WITH NO SPACES FOR NAMES. */}}
+  {{/* "examplegamename" and "egn" would be replaced with the name or abbreviation you want users to use for a game, and 0 would be replaced with the ID of the role related to that game.*/}}
   {{$role_dict := sdict "examplegamename" 0 "egn" 0}}
 
   {{/* Does the user need to have the role being pinged, to ping it?*/}}
   {{$require_targ_role := true}}
 
-  {{/* Announcment messages for the outcome of the command.*/}}
-  {{/*Note: "%s" in the sucess command, defines where to put the role ping, so be sure not to exclude it, if you customise the message.*/}}
+  {{/* Announcement messages for the outcome of the command.*/}}
+  {{/*Note: "%s" in the success command, defines where to put the role ping, so be sure not to exclude it, if you customise the message.*/}}
   {{$success_msg := print "Hey guys! " .User.Mention "is looking for someone to play %s with! Come join!"}}
   {{$fail_msg_no_role := print "Sorry " .User.Mention ", **but you do not have the role to ping that.**"}}
   {{$fail_msg_no_game := print "Sorry " .User.Username ", something went wrong. Please try a different name/abriviation."}}
