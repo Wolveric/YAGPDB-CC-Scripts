@@ -1,0 +1,105 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
+  License: MIT
+  Trigger Type: RegEx
+  Trigger: \A(-|<@!?204255221017214977>)\s*(g(ive)?|a(dd)?|r(emove)?|t(ake)?)role( +|\z)
+  Case sensitive: false
+  
+  Description: Created as an override enhancement to the built-in role assignment management commands.
+  This will enable simple, controlled management, over the specific roles, that can be managed with these commands, while also allowing the use of role mentions for assignment.
+  
+  ! NOTE !
+  
+  As this script is designed to override the -giverole and -takerole commands, it is important to put in place controls for use of the base command for this to be successful.
+  
+  ! NOTE !
+  
+ */}}
+
+{{/* CONFIGURATION START */}}
+
+	{{/* Do you want to exclude bots from your list of manageable users? */}}
+	{{$exclude_bots := true}}
+
+    {{/* 
+    
+        The configuration for this command, involves entering all valid assignment arguments, into this collection, as shown in the example.
+        It's recommended, this be the name of the role, followed by it's ID, to allow usage of the command, mirroring the built-in system, as well as for readability.
+    
+    */}}
+
+    {{$roles := cslice "Example" 0}}
+
+	{{/*
+
+		Additionally, this second collection defines a list of role IDs giving overriding permission to use this command, in the control panel.
+		Following a similar recommendation above, this is recommended to be the name of the role as the key, followed by it's ID, once again, as shown.
+
+		! NOTE !
+
+		Do NOT add roles, that aren't selected in the drop-down in the control panel, and don't have permission to manage roles, as this will allow them to use the command causing it to error.
+
+		! NOTE !
+
+	*/}}
+
+	{{$override_roles := sdict "Example" 0}}
+
+{{/* CONFIGURATION END */}}
+
+{{$args := parseArgs 0 "Temp" (carg "string" "Temp")}}
+{{$add := reFind "(?i)-(g(ive)?|a(dd)?)" .Cmd}}
+{{if $add}}
+	{{$args = parseArgs 2 "Correct Usage:```GiveRole <Member:Mention/ID> <Role:Text/Mention/ID>``````[-d Duration:Duration]```" (carg "member" "Target") (carg "string" "Role")}}
+{{else}}
+	{{$args = parseArgs 2 "Correct Usage:```RemoveRole <Member:Mention/ID> <Role:Text/Mention/ID>```" (carg "member" "Target") (carg "string" "Role")}}
+{{end}}
+
+{{$outranks := eq .User.ID .Guild.OwnerID}}
+{{if not $outranks}}
+	{{$info := cslice (sdict "Roles" .Member.Roles "Rank" 0) (sdict "Roles" ($args.Get 0).Roles "Rank" 0)}}
+	{{- range $i, $i_val := .Guild.Roles -}}
+		{{- range $j, $j_val := $info -}}
+			{{- if and (in $j_val.Roles $i_val.ID) (lt $j_val.Rank $i_val.Position) -}}
+				{{- (index $info $j).Set "Rank" $i_val.Position -}}
+			{{- end -}}
+		{{- end -}}
+	{{- end -}}
+	{{$outranks = or (gt (index $info 0).Rank (index $info 1).Rank)}}
+{{end}}
+
+{{$manage_perms := inFold  (index (split (exec "viewperms") "\n") 2) "ManageRoles"}}
+{{$can_manage := $manage_perms}}
+{{$exclude_bots = or (not (and $exclude_bots ($args.Get 0).User.Bot)) (and $can_manage false)}}
+
+{{$duration := reReplace "\\A +" (reFind " +-d +(\\d+([ywdhs]|(mo?)))+" ($args.Get 1)) ""}}
+
+{{if not $can_manage}}
+	{{- range $override_roles -}}
+		{{- $can_manage = or (hasRoleID .) $can_manage -}}
+	{{- end -}}
+{{end}}
+
+{{if and (ne ($args.Get 0).User.ID .Guild.OwnerID) $can_manage $exclude_bots $outranks}}
+	{{$role := reReplace "<|@|&|>| +-d +(\\d+([ywdhs]|(mo?)))+.*" ($args.Get 1) ""}}
+	{{if or (and $manage_perms false) (inFold $roles  $role)}}
+		{{if $add}}
+			{{if $duration}}
+				{{if (toDuration (index (split $duration " ") 1))}}
+					{{exec "grole" ($args.Get 0).User $role $duration}}
+				{{else}}
+					Value is not a valid duration.
+				{{end}}
+			{{else}}
+				{{exec "grole" ($args.Get 0).User $role}}
+			{{end}}
+		{{else}}
+			{{exec "trole" ($args.Get 0).User $role}}
+		{{end}}
+	{{else}}
+		Role not found in accessible role list.
+	{{end}}
+{{else}}
+	You do not have permission to use this command on the target user.
+{{end}}
