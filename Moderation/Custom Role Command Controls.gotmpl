@@ -82,7 +82,7 @@
 {{end}}
 
 {{if and (ne ($args.Get 0).User.ID .Guild.OwnerID) $can_manage $exclude_bots $outranks}}
-	{{$role := reReplace "<|@|&|>| +-d +(\\d+([ywdhs]|(mo?)))+.*" ($args.Get 1) ""}}
+	{{$role := reReplace "<|@|&|>| +-d +(\\d+([ywdhs]|(mo?)))+" ($args.Get 1) ""}}
 	{{if or (and $manage_perms false) (inFold $roles  $role)}}
 		{{if $add}}
 			{{if $duration}}
