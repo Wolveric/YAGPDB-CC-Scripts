@@ -64,7 +64,7 @@
 {{if $add}}
 	{{$usage = "```GiveRole <Member:Mention/ID> <Role:Text/Mentiond/ID>``````[-d Duration:Duration]```"}}
 {{end}}
-{{$usage = printf "%s\n\nInvalid Arguments provided: " $usage}}
+{{$usage = printf "%s\nInvalid Arguments provided: " $usage}}
 
 {{if .CmdArgs}}
 	{{$args := cslice}}
@@ -78,7 +78,7 @@
 			{{- else if eq $i $dur_ind -}}
 				{{$duration = toDuration $v}}
 			{{- else -}}
-				{{- $arg = $args.Append $v -}}
+				{{- $args = $args.Append $v -}}
 			{{- end -}}
 		{{end}}
 	{{else}}
@@ -99,7 +99,7 @@
 					{{- $role = print $role " " . -}}
 				{{end}}
 
-				{{$role = lower $role}}
+				{{$role = lower (slice $role 1)}}
 
 				{{if gt $dur_ind -1}}
 					{{$role = reReplace "(?s)\n.*" $role ""}}
