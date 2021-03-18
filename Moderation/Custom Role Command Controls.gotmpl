@@ -97,7 +97,7 @@
 				{{- $role = print $role " " . -}}
 			{{end}}
 
-			{{$role = lower (slice $role 1)}}
+			{{$role = reReplace "<@&(\\d{17,})>" (lower (slice $role 1)) "$1"}}
 
 			{{if gt $dur_ind -1}}
 				{{$role = reReplace "(?s)\n.*" $role ""}}
