@@ -31,7 +31,7 @@
     
     */}}
 
-    {{$roles := cslice "Example" "0"}}
+    {{$roles := cslice "Example" 0}}
 
 	{{/*
 
@@ -57,7 +57,7 @@
 {{range $cmd_out}}
     {{- $prefix = printf "%s\\x{%x}" $prefix . -}}
 {{end}}
-{{$prefix = printf "(?i)\\A(<@!?204255221017214977>|%s)\\s*(g(ive)?|a(dd)?)" $prefix}}
+{{$prefix = printf "(?i)\\A(%s|<@!?204255221017214977>)\\s*(g(ive)?|a(dd)?)" $prefix}}
 
 {{$add := reFind $prefix .Cmd}}
 {{$usage := "```RemoveRole <Member:Mention/ID> <Role:Text/Mentiond/ID>```"}}
@@ -68,8 +68,8 @@
 
 {{$args := cslice}}
 {{$duration := toDuration ""}}
-
 {{$dur_ind := -1}}
+
 {{if and $add (in .CmdArgs "-d")}}
 	{{range $i, $v := .CmdArgs}}
 		{{- if and (eq $dur_ind -1) (eq . "-d") -}}
@@ -84,20 +84,15 @@
 	{{$args = $args.AppendSlice .CmdArgs}}
 {{end}}
 
+{{$args = $args.StringSlice}}
+
 {{if gt (len $args) 1}}
 	{{$targ := reReplace "<@!?(\\d{17,})>" (index $args 0) "$1"}}
 	{{if $targ := toInt64 $targ}}
 
 		{{if $targ := getMember $targ}}
 
-			{{$role := ""}}
-			{{$args = slice $args 1}}
-
-			{{range $args}}
-				{{- $role = print $role " " . -}}
-			{{end}}
-
-			{{$role = reReplace "<@&(\\d{17,})>" (lower (slice $role 1)) "$1"}}
+			{{$role := reReplace "<@&(\\d{17,})>" (joinStr " " (slice $args 1)) "$1"}}
 
 			{{if gt $dur_ind -1}}
 				{{$role = reReplace "(?s)\n.*" $role ""}}
