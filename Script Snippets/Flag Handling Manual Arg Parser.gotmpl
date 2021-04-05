@@ -9,6 +9,8 @@
   Description: An example script for handling flags when manually parsing arguments for a command.
 
  */}}
+ 
+{{/* SCRIPT START */}}
 
 {{/* CONFIGURATION START */}}
 
@@ -69,6 +71,8 @@
 {{else}}
   {{$args = .CmdArgs}}
 {{end}}
+
+{{/* SCRIPT END */}}
 
 {{$res_args := print "Resulting Arguments: " $args}}
 {{$res_sw := "Switches Used:"}}
