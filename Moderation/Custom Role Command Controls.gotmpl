@@ -52,9 +52,10 @@
 
 {{addReactions "discord_loading:714051544265392229"}}
 {{$prefix := ""}}
-{{$cmd_out := split (exec "prefix") "`"}}
-{{$cmd_out = toRune (sub (len $cmd_out) 2|index $cmd_out)}}
-{{range $cmd_out}}
+{{$pre_start := str .Guild.ID|len|add 15}}
+{{$cmd_out := exec "prefix"}}
+{{$cmd_out = sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
+{{range toRune $cmd_out}}
     {{- $prefix = printf "%s\\x{%x}" $prefix . -}}
 {{end}}
 {{$prefix = printf "(?i)\\A(%s|<@!?204255221017214977>)\\s*(g(ive)?|a(dd)?)" $prefix}}
