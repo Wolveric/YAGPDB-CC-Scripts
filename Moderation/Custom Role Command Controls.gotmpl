@@ -74,7 +74,7 @@
 	{{range $i, $v := .CmdArgs}}
 		{{- if eq $i $dur_ind -}}
 			{{- $duration = toDuration $v -}}
-		{{- else if and (eq $dur_ind -1) (eq . "-d") -}}
+		{{- else if eq . "-d" -}}
 			{{- $dur_ind = add $i 1 -}}
 		{{- else -}}
 			{{- $args = $args.Append $v -}}
