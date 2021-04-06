@@ -51,16 +51,12 @@
 {{/* CONFIGURATION END */}}
 
 {{addReactions "discord_loading:714051544265392229"}}
-{{$prefix := ""}}
 {{$pre_start := str .Guild.ID|len|add 15}}
 {{$cmd_out := exec "prefix"}}
-{{$cmd_out = sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
-{{range toRune $cmd_out}}
-    {{- $prefix = printf "%s\\x{%x}" $prefix . -}}
-{{end}}
-{{$prefix = printf "(?i)\\A(%s|<@!?204255221017214977>)\\s*(g(ive)?|a(dd)?)" $prefix}}
+{{$pre_reg := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
+{{$pre_reg = reReplace `\\[QE]` $pre_reg `\$0`|printf `(?i)\A(\Q%s\E|<@!?204255221017214977>)\s*(g(ive)?|a(dd)?)`}}
 
-{{$add := reFind $prefix .Cmd}}
+{{$add := reFind $pre_reg .Cmd}}
 {{$usage := "```RemoveRole <Member:Mention/ID> <Role:Text/Mentiond/ID>```"}}
 {{if $add}}
 	{{$usage = "```GiveRole <Member:Mention/ID> <Role:Text/Mentiond/ID>``````[-d Duration:Duration]```"}}
