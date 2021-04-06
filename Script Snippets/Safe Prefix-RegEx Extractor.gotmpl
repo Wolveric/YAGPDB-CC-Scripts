@@ -6,21 +6,19 @@
   Trigger: N/A
   Case sensitive: N/A
 
-  Description: A script snippet, designed to compile a RegEx safe varient of the prefix used for YAGPDB for the server.
+  Description: A script snippet, designed to create a RegEx safe variant of the prefix used for YAGPDB for the server.
   This has uses in cases, such as scripts using RegEx triggers, that have variable outcomes, based on the trigger used.
-  This would be a case where a deliniator for the beggining of the command in the .Cmd field may be needed.
+  This would be a case where a delineator for the beginning of the command in the .Cmd field may be needed.
 
  */}}
 
 {{/* SCRIPT START */}}
 
-{{$pre_reg := ""}}
+
 {{$pre_start := str .Guild.ID|len|add 15}}
 {{$cmd_out := exec "prefix"}}
 {{$prefix := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
-{{range toRune $prefix}}
-    {{- $pre_reg = printf "%s\\x{%x}" $pre_reg . -}}
-{{end}}
+{{$pre_reg := reReplace `\\[QE]` $prefix `\$0`|printf "\\A\\Q%s\\E"}}
 
 {{/* SCRIPT END */}}
 
