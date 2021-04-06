@@ -24,7 +24,7 @@ Each individual command file will have a feature a heading comment, describing t
 ## Disclaimers
 + All scripts in this repository are provided as found, in a manner by which they are not to cause offense of any kind.
 The YAGPDB's creator, staff, support and/or myself, are not responsible for any difficulties caused by the implementation and/or use of these scripts.
-+ All scripts in this repository, are provided, and are typically intended to be used, as found, published in a state I `(Wolveric Catkin)` have considered appropriate to describe as "functional".
++ All scripts in this repository, are provided, and are typically intended to be used, as found, published in a state I `(Wolveric Catkin)` have deemed appropriate to describe as "functional".
 These commands are not guaranteed to be entirely free of faults, and may be detailed as in cases where this applies.
 + In the case where faults cannot be attributed to misunderstanding in use or configuration, contribution for the sake of their is appreciated!
 + In altering a script beyond intended parameters of configuration, in a manner where it can no longer be reasonably correlated with the base design, it is to be understood responsibility for troubleshooting any resulting conflicts with the base configuration, now predominantly fall upon the party having made such alterations, as it will have become divergent enough to be understood as the user's own design.
