@@ -23,13 +23,11 @@
 
 {{/* SCRIPT START*/}}
 
-{{$suf := "th"}}
 {{$suf_ops := sdict "1" "st" "2" "nd" "3" "rd"}}
 {{$cent := mod $int 100|toInt|str|reFind "\\d+"|toInt}}
 {{$dec := mod $int 10|toInt|str|reFind "\\d+"}}
-{{if and (or (lt $cent 11) (gt $cent 13)) ($x := $suf_ops.Get $dec)}}
-    {{$suf = $x}}
-{{end}}
-```Index Result: {{$int}}{{$suf}}```
+{{$suf = or (and (or (lt $cent 11) (gt $cent 13)) ($suf := $suf_ops.Get $dec)) "th"}}
 
 {{/* SCRIPT END */}}
+
+```Index Result: {{$int}}{{$suf}}```
