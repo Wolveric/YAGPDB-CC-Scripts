@@ -9,8 +9,8 @@
   Description: An example script for handling flags when manually parsing arguments for a command.
 
  */}}
- 
-{{/* SCRIPT START */}}
+
+ {{/* SCRIPT START */}}
 
 {{/* CONFIGURATION START */}}
 
@@ -41,18 +41,20 @@
 
 {{$args := cslice}}
 {{$flag_args := sdict}}
-{{$reg_check := ""}}
+{{$in := false}}
 {{$sw_end := sub (len $switches) 1}}
 {{$fl_ar_end := len $flags|add $sw_end}}
 {{$temp := ""}}
 
-{{range $i, $v := ($switches.AppendSlice $flags).StringSlice}}
-  {{$temp = print "-" $v}}
-  {{- $flag_args.Set $temp (and (gt $i $sw_end) "") -}}
-  {{- $reg_check = print $reg_check $temp (or (and (lt $i $fl_ar_end) "|") "") -}}
+{{with and .CmdArgs ($switches.AppendSlice $flags).StringSlice}}
+  {{range $i, $v := .}}
+    {{- $temp = print "-" $v -}}
+    {{- $flag_args.Set $temp (and (gt $i $sw_end) "") -}}
+    {{- $in = in $.CmdArgs $temp|or $in -}}
+  {{end}}
 {{end}}
 
-{{if reFind $reg_check .StrippedMsg}}
+{{if $in}}
 
   {{$temp = ""}}
 
