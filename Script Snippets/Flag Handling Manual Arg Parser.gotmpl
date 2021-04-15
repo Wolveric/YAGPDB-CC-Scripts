@@ -1,0 +1,91 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
+  License: MIT
+  Excluded Trigger Types: Exact match, Reaction, Hourly interval, Minute Interval
+  Trigger: N/A
+  Case sensitive: N/A
+
+  Description: An example script for handling flags when manually parsing arguments for a command.
+
+ */}}
+
+ {{/* SCRIPT START */}}
+
+{{/* CONFIGURATION START */}}
+
+  {{/* Enter the flags that should act as switches (Boolean/On/Off) values, in this cslice, as shown by the examples. */}}
+  {{/* These are recommended to be simple alphabetical values, and any values that can't be converted to strings, will be excluded.*/}}
+
+  {{$switches := cslice
+
+    "a"
+    "b"
+    "c"
+
+  }}
+
+  {{/* Enter the flags that should add optional arguments in this cslice, as shown by the examples.*/}}
+  {{/* These will collect the following value as a string in the resultant $flag_args dictionary. */}}
+  {{/* These should follow a similar format as above, and follow the same rules. */}}
+
+  {{$flags := cslice
+
+    "d"
+    "e"
+    "f"
+
+  }}
+
+{{/* CONFIGURATION END */}}
+
+{{$args := cslice}}
+{{$flag_args := sdict}}
+{{$in := false}}
+{{$sw_end := sub (len $switches) 1}}
+{{$fl_ar_end := len $flags|add $sw_end}}
+{{$temp := ""}}
+
+{{with and .CmdArgs ($switches.AppendSlice $flags).StringSlice}}
+  {{range $i, $v := .}}
+    {{- $temp = print "-" $v -}}
+    {{- $flag_args.Set $temp (and (gt $i $sw_end) "") -}}
+    {{- $in = in $.CmdArgs $temp|or $in -}}
+  {{end}}
+{{end}}
+
+{{if $in}}
+
+  {{$temp = ""}}
+
+  {{range .CmdArgs}}
+    {{- if $temp -}}
+      {{- $flag_args.Set $temp . -}}
+      {{- $temp = "" -}}
+    {{- else if eq ($temp = ($flag_args.Get .|kindOf)) "bool" "string" -}}
+      {{- $flag_args.Set . (or (eq $temp "bool") "") -}}
+      {{- $temp = or (and (eq $temp "string") .) "" -}}
+    {{- else -}}
+      {{- $args = $args.Append . -}}
+    {{- end -}}
+  {{end}}
+
+{{else}}
+  {{$args = .CmdArgs}}
+{{end}}
+
+{{/* SCRIPT END */}}
+
+{{$res_args := print "Resulting Arguments: " $args}}
+{{$res_sw := "Switches Used:"}}
+{{$res_fl := "Flags and Arguments:"}}
+
+{{range $k, $v := $flag_args}}
+  {{- if kindOf $v|eq "bool" -}}
+    {{- $res_sw = print $res_sw (or (and $v (print "\n" $k)) "") -}}
+  {{- else -}}
+    {{- $res_fl = or (and $v (printf "\n%s %s" $k $v)) ""|print $res_fl -}}
+  {{- end -}}
+{{end}}
+
+```{{$res_args}}``````{{$res_sw}}``````{{$res_fl}}```

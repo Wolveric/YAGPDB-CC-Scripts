@@ -1,0 +1,25 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021, with assistance from DZ (https://github.com/DZ-TM)
+  License: MIT
+  Excluded Trigger Types: None
+  Trigger: N/A
+  Case sensitive: N/A
+
+  Description: A script snippet, designed to create a RegEx safe variant of the prefix used for YAGPDB for the server.
+  This has uses in cases, such as scripts using RegEx triggers, that have variable outcomes, based on the trigger used.
+  This would be a case where a delineator for the beginning of the command in the .Cmd field may be needed.
+
+ */}}
+
+{{/* SCRIPT START */}}
+
+
+{{$pre_start := str .Guild.ID|len|add 15}}
+{{$cmd_out := exec "prefix"}}
+{{$prefix := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
+{{$pre_reg := reReplace `\\[QE]` $prefix `\$0`|printf "\\A\\Q%s\\E"}}
+
+{{/* SCRIPT END */}}
+
+```Prefix: {{$prefix}}``````Safe RegEx: {{$pre_reg}}```

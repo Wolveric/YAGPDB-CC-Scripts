@@ -1,0 +1,33 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
+  License: MIT
+  Excluded Trigger Types: None
+  Trigger: N/A
+  Case sensitive: N/A
+
+  Description: A script, to define the index suffix, or more commonly, ordinal, of a particular number.
+
+ */}}
+
+{{$args := parseArgs 1 "Correct Usage:```IndexSuffix <Index:Whole Number>```" (carg "int" "Index")}}
+
+{{/* 
+
+    Note, for this case, I do not consider the $int variable as an integral part of this script.
+    This is because it may be replaced with an integer from any other source, as suited for the script's design.
+
+*/}}
+
+{{$int := $args.Get 0}}
+
+{{/* SCRIPT START*/}}
+
+{{$suf_ops := sdict "1" "st" "2" "nd" "3" "rd"}}
+{{$cent := mod $int 100|toInt|str|reFind "\\d+"|toInt}}
+{{$dec := mod $int 10|toInt|str|reFind "\\d+"}}
+{{$suf = or (and (or (lt $cent 11) (gt $cent 13)) ($suf := $suf_ops.Get $dec)) "th"}}
+
+{{/* SCRIPT END */}}
+
+```Index Result: {{$int}}{{$suf}}```
