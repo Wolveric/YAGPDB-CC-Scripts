@@ -16,7 +16,7 @@ Each individual command file will have a feature a heading comment, describing t
 + [Moderation](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Moderation)
   + Relocate
   + Custom Role Command Controls
-+ [Script Snippets](https://www.example.com)
++ [Script Snippets](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Script%20Snippets)
   + Flag Handling Manual Arg Parser
   + Index Suffix Extractor
   + Safe Prefix-RegEx Extractor
