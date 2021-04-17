@@ -23,10 +23,10 @@
 
 {{/* SCRIPT START*/}}
 
-{{$suf_ops := sdict "1" "st" "2" "nd" "3" "rd"}}
-{{$cent := mod $int 100|toInt|str|reFind "\\d+"|toInt}}
-{{$dec := mod $int 10|toInt|str|reFind "\\d+"}}
-{{$suf = or (and (or (lt $cent 11) (gt $cent 13)) ($suf := $suf_ops.Get $dec)) "th"}}
+{{$suf_ops := cslice "th" "st" "nd" "rd"}}
+{{$cent := ($x := mod $int 100)|or (and (lt $x 0.0 (mult $x -1)))|toInt}}
+{{$dec := ($x = mod $int 10)|or (and (lt $x 0.0) (mult $x -1))|toInt}}
+{{$suf := or (and (or (lt $cent 11) (gt $cent 13)) (lt $dec 4) $dec) 0|index $suf_ops}}
 
 {{/* SCRIPT END */}}
 
