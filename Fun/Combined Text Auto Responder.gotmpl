@@ -1,0 +1,102 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric),
+  License: MIT
+  Trigger Type: RegEx
+  Trigger: \A
+  Case sensitive: N/A
+
+  Description: A basic auto-responder, intended for text/link responses, based on RegEx content matching.
+  
+  The script should be capable as a standalone script, where nessacary, or to be injected into another script, where it follows the same trigger, and resources allow it.
+
+ */}}
+
+{{/* CONFIGURATION START */}}
+
+    {{/*
+    
+        An example collection of options are shown here.
+        This is composed of the response, in the key field, and the options to match against in a cslice, as the entry.
+
+        ! Note ! Due to the nature of sdicts being "String Dictionaries", these responses can only be in the form of text or links. ! Note !
+        ! Note ! These options are used in RegEx, and as such, have to match a valid expression, or the command will likely error. ! Note !
+        ! Note ! This will always be composed a case-insensetive group of options, that need to stand alone in the message, as well as only allowing one option. ! Note !
+        ! Note ! This script can only register up to 30 different response options, due to resource limitations within YAGPDB. ! Note !
+    
+    */}}
+
+    {{$responses := sdict
+    
+        "https://tenor.com/view/example-gif-20586215" (cslice `Example` `Also\s+an\s+example`)
+    
+    }}
+
+
+    {{/* These are settings for how long, if at all, it should take to clear the response, or for the cooldown to expire. */}}
+    {{$cleanup := 30}}
+    {{$cooldown := 30}}
+
+    {{/* If a cooldown is set, an optional error message, and a clean-up delay for that message, can be set here. */}}
+    {{$cooldown_msg := ""}}
+    {{$cooldown_msg_cleanup := 0}}
+
+{{/* CONFIGURATION END*/}}
+
+{{$key := printf "Link_Responder_Cooldown[%d]" .CCID}}
+
+{{if $entry := dbGet 0 $key}}
+
+    {{if $cooldown_msg}}
+
+        {{$x := sendMessageRetID nil $cooldown_msg}}
+
+        {{if gt $cooldown_msg_cleanup 0}}
+
+            {{deleteMessage nil $x $cooldown_msg_cleanup}}
+
+        {{end}}
+        
+    {{end}}
+
+{{else}}
+
+    {{$depth := toInt .StackDepth}}
+    {{$msg := .Message.Content}}
+
+    {{$start := mult $depth 10}}
+    {{$end := add $start 11}}
+    {{$i := 0}}
+    {{$check := sdict}}
+    {{$out := ""}}
+
+    {{range $k, $v := $responses}}
+        {{$i := add $i 1}}
+        {{if and (gt $i $start) (lt $i $end)}}
+            {{joinStr "|" $v.StringSlice|printf `(?i)(^|\s)(%s)(\b|$)`|$check.Set $k}}
+        {{end}}
+    {{end}}
+
+    {{range $k, $v := $check}}
+        {{if reFind $v $msg|and (not $out)}}
+            {{$out = $k}}
+        {{end}}
+    {{end}}
+
+    {{if $out}}
+
+        {{$out}}
+
+        {{if gt $cleanup 0}}
+            {{deleteResponse $cleanup}}
+        {{end}}
+
+        {{if gt $cooldown 0}}
+            {{dbSetExpire 0 $key true $cooldown}}
+        {{end}}
+
+    {{else if and (lt $depth 2) (eq (len $check) 10)}}
+        {{execCC .CCID nil 0 true}}
+    {{end}}
+
+{{end}}
