@@ -1,7 +1,7 @@
 {{/*
 
   Created by Wolveric Catkin (https://github.com/Wolveric),
-  License: MIT
+  Licence: GNU GPL v2.0
   Trigger Type: RegEx
   Trigger: \A
   Case sensitive: N/A
@@ -73,7 +73,7 @@
     {{range $k, $v := $responses}}
         {{$i := add $i 1}}
         {{if and (gt $i $start) (lt $i $end)}}
-            {{joinStr "|" $v.StringSlice|printf `(?i)(^|\s)(%s)(\b|$)`|$check.Set $k}}
+            {{joinStr "|" $v.StringSlice|printf `(?i)(^|\s|\*{1,3}|[~_]{2})(%s)\b`|$check.Set $k}}
         {{end}}
     {{end}}
 
