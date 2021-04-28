@@ -1,0 +1,81 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric),
+  License: GNU GPL v2.0
+  Trigger Type: Command (mention/command prefix)
+  Trigger: search
+  Case sensitive: false
+
+  Description: A command designed to enable a combined lookup system.
+  
+  The command checks which platform the user asked for.
+  It then uses the rest of the arguments to together a lookup link from the search platform, and send it as an embed with the link as it's URL.
+
+ */}}
+
+{{/* CONFIGURATION START */}}
+
+    {{/*
+    
+        Example default configurations for the system can be seen here, ulilising printf flags to append the search terms used, into the query URL.
+        To make the output a bit more visually pleasing, there's also an option for a platform icon, used as the thumbnail for the embed.
+
+        ! NOTE ! THERE ARE TWO REQUIREMENTS OF ANY LINKS ENTERED INTO THE COLLECTION OF SITES:
+
+            1. Search queries require a printf string flag to enter the query terms into.
+            2. The links for the query and icon will be appended to the link protocol, and will invalidate the embed if they are repeated in the configuration area.
+
+        ! NOTE !
+    
+    */}}
+
+    {{$sites := sdict 
+
+            "Google" (sdict 
+                
+                "Site" "www.google.co.uk/search?q=%s"
+                "Icon" "cdn.discordapp.com/attachments/714610754497806497/837068912755605534/Nice_Google_Logo.png")
+
+            "Bing" (sdict
+            
+                "Site" "www.bing.com/search?q=%s"
+                "Icon" "pbs.twimg.com/media/EjjmMhjX0AAQ7d5.png"
+            
+            )
+
+            "Github" (sdict
+            
+                "Site" "github.com/search?q=%s"
+                "Icon" "www.influxdata.com/wp-content/uploads/GitHub-logo.jpg"
+            
+            )
+
+    }}
+
+{{/* CONFIGURATION END */}}
+
+{{if len .CmdArgs|lt 1}}
+
+    {{$ops := cslice}}
+    {{$prot := "https://%s"}}
+
+    {{range $k, $v := $sites}}
+        {{- $ops = $ops.Append $k -}}
+    {{end}}
+
+    {{$ver := index .CmdArgs 0|reFind (joinStr "|" $ops.StringSlice|printf `(?i)\A(%s)\z`)|title}}
+
+    {{with $sites.Get $ver|and .CmdArgs .User}}
+        {{$site := printf $prot .Site}}
+        {{slice $.CmdArgs 1|joinStr " "|urlquery|printf $site|cembed 
+            "title" (print "Search results from " $ver) 
+            "description" (print "Requested by " $.User.Mention) 
+            "thumbnail" (printf $prot .Icon|and .Icon|sdict "url") 
+            "url"|sendMessage nil}}
+    {{else}}
+        {{joinStr "\n\tSearch " $ops.StringSlice|printf "Could not find the site specified. Here's an index of the full list:```\tSearch %s```"}}
+    {{end}}
+
+{{else}}
+    {{"```Search <Site:Text> <Terms:Text>```\nInvalid arguments provided: Not enough arguments passed"}}
+{{end}}
