@@ -23,6 +23,8 @@
         ! NOTE ! THERE ARE TWO REQUIREMENTS OF ANY LINKS ENTERED INTO THE COLLECTION OF SITES:
 
             1. Search queries require a printf string flag to enter the query terms into.
+            This also means any literal % characters for the content of links need to be escaped with a double %%.
+
             2. The links for the query and icon will be appended to the link protocol, and will invalidate the embed if they are repeated in the configuration area.
 
         ! NOTE !
@@ -63,7 +65,7 @@
         {{- $ops = $ops.Append $k -}}
     {{end}}
 
-    {{$ver := index .CmdArgs 0|reFind (joinStr "|" $ops.StringSlice|printf `(?i)\A(%s)\z`)|title}}
+    {{$ver := index .CmdArgs 0|reFind (joinStr "|" $ops.StringSlice|printf `(?i)\A(%s)\z`)|lower|title}}
 
     {{with $sites.Get $ver|and .CmdArgs .User}}
         {{$site := printf $prot .Site}}
