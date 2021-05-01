@@ -71,7 +71,7 @@
     {{$out := ""}}
 
     {{range $k, $v := $responses}}
-        {{$i := add $i 1}}
+        {{$i = add $i 1}}
         {{if and (gt $i $start) (lt $i $end)}}
             {{joinStr "|" $v.StringSlice|printf `(?i)(^|\s)(\*{1,3}|[~_]{2})?(%s)(\*{1,3}|[~_]{2})?(\b|$)`|$check.Set $k}}
         {{end}}
