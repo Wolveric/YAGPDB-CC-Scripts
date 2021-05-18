@@ -53,7 +53,7 @@
 {{addReactions "discord_loading:714051544265392229"}}
 {{$pre_start := str .Guild.ID|len|add 15}}
 {{$cmd_out := exec "prefix"}}
-{{$pre_reg := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
+{{$prefix := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
 {{$pre_reg := split $prefix `\E`|joinStr `\E\\E\Q`|printf `(?i)\A(\Q%s\E|<@!?204255221017214977>)\s*(g(ive)?|a(dd)?)`}}
 
 {{$add := reFind $pre_reg .Cmd}}
