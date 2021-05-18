@@ -54,7 +54,7 @@
 {{$pre_start := str .Guild.ID|len|add 15}}
 {{$cmd_out := exec "prefix"}}
 {{$pre_reg := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
-{{$pre_reg = reReplace `\\[QE]` $pre_reg `\$0`|printf `(?i)\A(\Q%s\E|<@!?204255221017214977>)\s*(g(ive)?|a(dd)?)`}}
+{{$pre_reg := split $prefix `\E`|joinStr `\E\\E\Q`|printf `(?i)\A(\Q%s\E|<@!?204255221017214977>)\s*(g(ive)?|a(dd)?)`}}
 
 {{$add := reFind $pre_reg .Cmd}}
 {{$usage := "```RemoveRole <Member:Mention/ID> <Role:Text/Mentiond/ID>```"}}
