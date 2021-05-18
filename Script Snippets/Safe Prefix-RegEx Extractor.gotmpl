@@ -18,7 +18,7 @@
 {{$pre_start := str .Guild.ID|len|add 15}}
 {{$cmd_out := exec "prefix"}}
 {{$prefix := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
-{{$pre_reg := reReplace `\\[QE]` $prefix `\$0`|printf "\\A\\Q%s\\E"}}
+{{$pre_reg := split $prefix `\E`|joinStr `\E\\E\Q`|printf "\\A\\Q%s\\E"}}
 
 {{/* SCRIPT END */}}
 
