@@ -51,6 +51,8 @@
 {{/* CONFIGURATION END */}}
 
 {{addReactions "discord_loading:714051544265392229"}}
+
+{{if inFold (exec "cc" .CCID) "\n  Created by Wolveric Catkin (https://github.com/Wolveric)"}}
 {{$pre_start := str .Guild.ID|len|add 15}}
 {{$cmd_out := exec "prefix"}}
 {{$prefix := sub (len $cmd_out) 1|slice $cmd_out $pre_start}}
@@ -165,3 +167,4 @@
 	{{printf "%sNot enough arguments passed" $usage}}
 {{end}}
 {{deleteMessageReaction nil .Message.ID 204255221017214977 "discord_loading:714051544265392229"}}
+{{end}}
