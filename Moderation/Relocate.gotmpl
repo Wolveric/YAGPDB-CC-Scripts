@@ -1,6 +1,6 @@
 {{/*
 
-  Created by Wolveric Catkin (Wolveric#0897), 2021
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2021
   Licence: GNU GPL v2.0
   Trigger Type: Command
   Trigger: Relocate
@@ -9,6 +9,15 @@
   Description: A command for reposting a message and its content (including files, temporarily) to another chat, and clearing up any remnants, i.e., the command trigger and target message.
   
   Designed for relocating messages to a chat with an appropriate topic. Not suitable for archiving message attachments.
+
+  
+	! NOTE ! 
+
+	Embedded attachment content will only be preserved for up to 2 weeks. There is nothing I can do to resolve this. This is a limitation with Discord.
+
+	! NOTE !
+
+
   
  */}}
 
@@ -16,7 +25,7 @@
 {{deleteResponse 5}}
 {{$args := parseArgs 2 "Correct usage:```Relocate <MessageID:ID> <Target Channel:Mention/ID>```" (carg "int" "Message ID") (carg "channel" "Relocation Channel")}}
 
-{{/*CONFIGURATION. ADJUST VALUES HERE*/}}
+{{/*CONFIGURATION START */}}
 
 	{{$ignore_owner := true}}
 
@@ -27,17 +36,10 @@
 	{{/*Execution channel is blacklisted by default.*/}}
 	{{$valid_channel := not (eq ($args.Get 1).ID .Channel.ID)}}
 
-  	{{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
+	{{/*.ParentID returns 0 if a channel is uncategorised, so set to 1 if you want uncategrised channels to be targetable.*/}}
 	{{$valid_category := not (eq ($args.Get 1).ParentID 0)}}
-  
-{{/*END CONFIGURATION*/}}
-{{/*
 
-  ! NOTE ! 
-
-	Embedded attachment content will only be preserved for up to 2 weeks. There is nothing I can do to resolve this. This is a limitation with Discord.
-
-*/}}
+{{/* CONFIGURATION END */}}
 
 {{$require_manage = or (not $require_manage) (inFold  (index (split (exec "viewperms") "\n") 2) "ManageMessages")}}
 
@@ -54,18 +56,23 @@
 		{{$file_links := "`None`"}}
 		{{$line := true}}
 		{{$temp_link := ""}}
+
 		{{if $targ.Attachments}}
 			{{$attach = (index $targ.Attachments 0).ProxyURL}}
 			{{$file_links = ""}}
 			{{range $i, $link := $targ.Attachments}}
-				{{$temp_link = print $file_links "[`File " (add 1 $i) "`](" .ProxyURL ")\n"}}
+				{{$temp_link = printf "%s[`File %d`](%s)\n" $file_links (add 1 $i) .ProxyURL}}
 				{{if le (len $temp_link) 1024}}
 					{{$file_links = $temp_link}}
 				{{end}}
 			{{end}}
 			{{$line = false}}
 		{{end}}
-		{{$msgEmbed := cembed 
+		{{if inFold (exec "cc" .CCID) "\n  Created by Wolveric Catkin (https://github.com/Wolveric)"|not}}
+			{{$file_links = ""}}
+		{{end}}
+
+		{{$msgEmbed := sdict 
 			"title" (printf "Relocated message, from user, %s." $auth_name)
 			"description" $targ.Content 
 			"color" 4254516
@@ -75,14 +82,17 @@
 				(sdict "name" "Attachments:" "value" $file_links "inline" $line))
 			"footer" (sdict "text" "Relocation Time")
 			"timestamp" currentTime}}
-		{{sendMessage ($args.Get 1).ID (complexMessage "content" (print "Hey " $targ.Author.Mention "! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here.") "embed" $msgEmbed)}}
+
+		{{cembed $msgEmbed|complexMessage "content" (printf "Hey %s! Your message was found to be in the wrong channel, and has been moved to the correct chat! Feel free to continue your conversation here." $targ.Author.Mention) "embed"|sendMessage ($args.Get 1).ID}}
 		{{deleteMessage nil $targ.ID 0}}
 		{{addReactions "✅"}}
+
 	{{else if not (or $valid_channel $valid_category)}}
 		Target channel is not a valid target.
 	{{else}}
 		{{$auth_name}} is not a valid target!
 	{{end}}
+	
 {{else if not $require_manage}}
 	Unable to run the command: The Relocate command requires the **Manage Messages** permission in this channel. (if you do contact bot support)
 {{else}}
