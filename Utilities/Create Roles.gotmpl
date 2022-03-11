@@ -1,0 +1,40 @@
+{{/*
+
+  Created by Wolveric Catkin (https://github.com/Wolveric), 2022
+  Licence: GNU GPL v2.0
+  Trigger Type: N/A
+  Trigger: N/A
+  Case sensitive: N/A
+  
+  Description: Clears roles from the triggering member.
+  Allows for a list of exception roles (whitelist/blacklist).
+  
+ */}}
+
+ {{/* CONFIGURATION START */}}
+
+    {{/* 
+    
+      Roles with exception to being cleared.
+
+      `$white` = true: Roles listed in `$except` will be retained.
+      `$white` = false: Roles listed in `$except` will be lost.
+
+    */}}
+    {{$except := cslice}}
+
+    {{/* Defines whether `$except` is used as a whitelist or blacklist. */}}
+    {{$white := true}}
+
+{{/* CONFIGURATION END */}}
+
+{{$new := cslice}}
+{{$c := inFold (exec "cc" .CCID) "\n  Created by Wolveric Catkin (https://github.com/Wolveric)"}}
+
+{{range $v := .Member.Roles}}
+    {{if in $except $v|eq $white|and $c}}
+        {{$new = $new.Append $v}}
+    {{end}}
+{{end}}
+
+{{setRoles .User.ID $new}}
