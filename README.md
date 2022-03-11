@@ -14,6 +14,7 @@ Each individual command file will have a feature a heading comment, describing t
   + Looking For Game
   + Add Reactions
   + Combined Lookup
+  + Clear Roles
 + [Moderation](https://github.com/Wolveric/YAGPDB-Scripts/tree/master/Moderation)
   + Relocate
   + Custom Role Command Controls
